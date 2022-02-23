@@ -75,9 +75,9 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
 
   // function triggered by scroll event listener.
   const scrollHandler = () => {
-    // measure the distance from viewport's left-top corner to the bottom of body.
+    // measure the distance from container's left-top corner to the bottom of body.
     const distanceToBottom = innerRef.current!.getBoundingClientRect().bottom;
-    // to check if the distance is smaller than viewHeight + 100.
+    // to check if the distance is smaller than containerHeight + 100.
     const isClosingBottom =
       distanceToBottom < containerRef.current!.offsetHeight + 100;
     // only fetch new data when not loading, not end of data and closing to bottom of the page.
