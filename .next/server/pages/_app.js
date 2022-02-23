@@ -78,7 +78,8 @@ const ReposSlice = (0,_reduxjs_toolkit__WEBPACK_IMPORTED_MODULE_0__.createSlice)
             ];
             state.currentPage++;
         },
-        // set the entire repos to new repos.
+        // set the entire repos to new repos when query params was changed.
+        // reset page number.
         setRepos (state, action) {
             state.repos = action.payload;
             state.currentPage = 1;

@@ -7,7 +7,12 @@ const useFetchRepos = (repoName: string) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const sendRequest = async (newPage: number, type: string, sort: string, direction: string) => {
+  const sendRequest = async (
+    newPage: number,
+    type: string,
+    sort: string,
+    direction: string
+  ) => {
     setIsLoading(true);
     setError(null);
     // newPage => the page number to extract.

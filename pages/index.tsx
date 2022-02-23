@@ -31,13 +31,10 @@ let isInitial = true;
 
 const Home: NextPage<{ repos: Repo[] }> = (props) => {
   const dispatch = useDispatch<AppDispatch>();
-  const currentPage = useSelector(
-    (state: RootState) => state.repos.currentPage
-  );
-  const repos = useSelector((state: RootState) => state.repos.repos);
+  const { currentPage, repos } = useSelector((state: RootState) => state.repos);
   const { isLoading, error, sendRequest } = useFetchRepos(REPO_NAME);
 
-  // to check if the page has been scroll to end.
+  // to check if the page has been scrolled to end.
   const [isEnd, setIsEnd] = useState<boolean>(false);
 
   // ref for scroll event.
@@ -49,7 +46,7 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
   const [sort, setSort] = useState<string>("created");
   const [direction, setDirection] = useState<string>("desc");
 
-  // dispatch props to redux when building process, default value.
+  // dispatch props to redux when building process, as default value.
   useEffect(() => {
     dispatch(reposActions.addRepos(props.repos));
   }, []);
@@ -61,7 +58,7 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
       isInitial = false;
       return;
     }
-    // fix the page number to 1.
+    // fix the page number to 1 when resetting.
     sendRequest(1, type, sort, direction).then((data) => {
       let newRepos = [];
       if (data && data.length > 0) {
@@ -75,7 +72,7 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
 
   // function triggered by scroll event listener.
   const scrollHandler = () => {
-    // measure the distance from container's left-top corner to the bottom of body.
+    // measure the distance from container's top to the bottom of inner.
     const distanceToBottom = innerRef.current!.getBoundingClientRect().bottom;
     // to check if the distance is smaller than containerHeight + 100.
     const isClosingBottom =
@@ -123,7 +120,7 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
         onScroll={scrollHandler}
         className={styles.container}
       >
-        <div id="inner" ref={innerRef} className={styles.inner}>
+        <div ref={innerRef} className={styles.inner}>
           <Filter
             setType={setType}
             setSort={setSort}

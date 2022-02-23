@@ -318,9 +318,8 @@ const extract = (list)=>{
     if (list.length === 0) {
         return [];
     }
-    return list.map((data)=>{
-        return new repo(data["clone_url"], data.id, data.name, data["created_at"], data["downloads_url"]);
-    });
+    return list.map((data)=>new repo(data["clone_url"], data.id, data.name, data["created_at"], data["downloads_url"])
+    );
 };
 
 ;// CONCATENATED MODULE: ./hooks/fetchRepos.tsx
@@ -382,12 +381,10 @@ const REPO_NAME = "ChiuYuan-First-Organization";
 let isInitial = true;
 const Home = (props)=>{
     const dispatch = (0,external_react_redux_.useDispatch)();
-    const currentPage = (0,external_react_redux_.useSelector)((state)=>state.repos.currentPage
-    );
-    const repos = (0,external_react_redux_.useSelector)((state)=>state.repos.repos
+    const { currentPage , repos  } = (0,external_react_redux_.useSelector)((state)=>state.repos
     );
     const { isLoading , error , sendRequest  } = fetchRepos(REPO_NAME);
-    // to check if the page has been scroll to end.
+    // to check if the page has been scrolled to end.
     const { 0: isEnd , 1: setIsEnd  } = (0,external_react_.useState)(false);
     // ref for scroll event.
     const containerRef = (0,external_react_.useRef)(null);
@@ -396,7 +393,7 @@ const Home = (props)=>{
     const { 0: type , 1: setType  } = (0,external_react_.useState)("all");
     const { 0: sort , 1: setSort  } = (0,external_react_.useState)("created");
     const { 0: direction , 1: setDirection  } = (0,external_react_.useState)("desc");
-    // dispatch props to redux when building process, default value.
+    // dispatch props to redux when building process, as default value.
     (0,external_react_.useEffect)(()=>{
         dispatch(store_repos/* reposActions.addRepos */.c.addRepos(props.repos));
     }, []);
@@ -407,7 +404,7 @@ const Home = (props)=>{
             isInitial = false;
             return;
         }
-        // fix the page number to 1.
+        // fix the page number to 1 when resetting.
         sendRequest(1, type, sort, direction).then((data)=>{
             let newRepos = [];
             if (data && data.length > 0) {
@@ -424,9 +421,9 @@ const Home = (props)=>{
     ]);
     // function triggered by scroll event listener.
     const scrollHandler = ()=>{
-        // measure the distance from viewport's left-top corner to the bottom of body.
+        // measure the distance from container's top to the bottom of inner.
         const distanceToBottom = innerRef.current.getBoundingClientRect().bottom;
-        // to check if the distance is smaller than viewHeight + 100.
+        // to check if the distance is smaller than containerHeight + 100.
         const isClosingBottom = distanceToBottom < containerRef.current.offsetHeight + 100;
         // only fetch new data when not loading, not end of data and closing to bottom of the page.
         if (!isLoading && !isEnd && isClosingBottom) {
@@ -482,7 +479,6 @@ const Home = (props)=>{
                 onScroll: scrollHandler,
                 className: (Home_module_default()).container,
                 children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                    id: "inner",
                     ref: innerRef,
                     className: (Home_module_default()).inner,
                     children: [
@@ -548,7 +544,8 @@ const ReposSlice = (0,_reduxjs_toolkit__WEBPACK_IMPORTED_MODULE_0__.createSlice)
             ];
             state.currentPage++;
         },
-        // set the entire repos to new repos.
+        // set the entire repos to new repos when query params was changed.
+        // reset page number.
         setRepos (state, action) {
             state.repos = action.payload;
             state.currentPage = 1;

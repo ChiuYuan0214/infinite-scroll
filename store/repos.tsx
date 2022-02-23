@@ -22,11 +22,12 @@ const ReposSlice = createSlice({
       state.repos = [...state.repos, ...action.payload];
       state.currentPage++;
     },
-    // set the entire repos to new repos.
+    // set the entire repos to new repos when query params was changed.
+    // reset page number.
     setRepos(state, action) {
       state.repos = action.payload;
       state.currentPage = 1;
-    }
+    },
   },
 });
 
