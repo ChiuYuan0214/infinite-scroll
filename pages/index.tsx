@@ -36,6 +36,9 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
   );
   const repos = useSelector((state: RootState) => state.repos.repos);
   const { isLoading, error, sendRequest } = useFetchRepos(REPO_NAME);
+
+  // to check if the page has been scroll to end.
+  const [isEnd, setIsEnd] = useState<boolean>(false);
   
   // ref for scroll event.
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -66,6 +69,7 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
       }
       // set the entire repos to newly received repos.
       dispatch(reposActions.setRepos(newRepos));
+      setIsEnd(false);
     });
   }, [type, sort, direction]);
 
@@ -77,11 +81,13 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
     if (distanceToBottom < containerRef.current!.offsetHeight + 100) {
       // assign the page number as current page number + 1.
       const newPage = currentPage + 1;
-      if (!isLoading) {
+      if (!isLoading && !isEnd) {
         sendRequest(newPage, type, sort, direction).then((data) => {
           if (data && data.length > 0) {
             const newRepos = JSON.parse(JSON.stringify(data));
             dispatch(reposActions.addRepos(newRepos));
+          } else {
+            setIsEnd(true);
           }
         });
       }
