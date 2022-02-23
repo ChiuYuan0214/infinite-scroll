@@ -137,7 +137,7 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
 
 export const getStaticProps = async () => {
   const response = await fetch(
-    `https://api.github.com/orgs/${REPO_NAME}/repos?per_page=3`
+    `https://api.github.com/orgs/${REPO_NAME}/repos?per_page=3&page=1&type=all&sort=created&direction=desc`
   );
   if (!response.ok) {
     console.log("failed to fetch static props");
