@@ -39,7 +39,7 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
 
   // to check if the page has been scroll to end.
   const [isEnd, setIsEnd] = useState<boolean>(false);
-  
+
   // ref for scroll event.
   const containerRef = useRef<HTMLDivElement | null>(null);
   const innerRef = useRef<HTMLDivElement | null>(null);
@@ -78,19 +78,23 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
     // measure the distance from viewport's left-top corner to the bottom of body.
     const distanceToBottom = innerRef.current!.getBoundingClientRect().bottom;
     // to check if the distance is smaller than viewHeight + 100.
-    if (distanceToBottom < containerRef.current!.offsetHeight + 100) {
+    const isClosingBottom =
+      distanceToBottom < containerRef.current!.offsetHeight + 100;
+    // only fetch new data when not loading, not end of data and closing to bottom of the page.
+    if (!isLoading && !isEnd && isClosingBottom) {
       // assign the page number as current page number + 1.
       const newPage = currentPage + 1;
-      if (!isLoading && !isEnd) {
-        sendRequest(newPage, type, sort, direction).then((data) => {
-          if (data && data.length > 0) {
-            const newRepos = JSON.parse(JSON.stringify(data));
-            dispatch(reposActions.addRepos(newRepos));
-          } else {
-            setIsEnd(true);
-          }
-        });
-      }
+      sendRequest(newPage, type, sort, direction).then((data) => {
+        if (data && data.length > 0) {
+          const newRepos = JSON.parse(JSON.stringify(data));
+          dispatch(reposActions.addRepos(newRepos));
+        } else {
+          // this block triggered when length of data is not greater than 0.
+          // equal to 'no more valid data'.
+          // set isEnd to true to stop triggering this function when scroll.
+          setIsEnd(true);
+        }
+      });
     }
   };
 
