@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 import { extract } from "../libs/extract";
 
@@ -7,7 +7,7 @@ const useFetchRepos = (repoName: string) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const sendRequest = async (
+  const sendRequest = useCallback(async (
     newPage: number,
     type: string,
     sort: string,
@@ -31,7 +31,8 @@ const useFetchRepos = (repoName: string) => {
       setError("Something went wrong.");
       setIsLoading(false);
     }
-  };
+  }, []);
+  
   return {
     isLoading,
     error,

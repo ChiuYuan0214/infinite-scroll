@@ -31,11 +31,8 @@ let isInitial = true;
 
 const Home: NextPage<{ repos: Repo[] }> = (props) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { currentPage, repos } = useSelector((state: RootState) => state.repos);
+  const { currentPage, repos, isEnd } = useSelector((state: RootState) => state.repos);
   const { isLoading, error, sendRequest } = useFetchRepos(REPO_NAME);
-
-  // to check if the page has been scrolled to end.
-  const [isEnd, setIsEnd] = useState<boolean>(false);
 
   // ref for scroll event.
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -66,9 +63,8 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
       }
       // set the entire repos to newly received repos.
       dispatch(reposActions.setRepos(newRepos));
-      setIsEnd(false);
     });
-  }, [type, sort, direction]);
+  }, [type, sort, direction, sendRequest]);
 
   // function triggered by scroll event listener.
   const scrollHandler = () => {
@@ -89,7 +85,6 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
           // this block triggered when length of data is not greater than 0.
           // equal to 'no more valid data'.
           // set isEnd to true to stop triggering this function when scroll.
-          setIsEnd(true);
         }
       });
     }
@@ -114,7 +109,6 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
         <title>ChiuYuan's repos</title>
         <meta name="description" content="Adam Chiu's repositories." />
       </Head>
-      {isLoading && <LoadingAnimation />}
       <div
         ref={containerRef}
         onScroll={scrollHandler}
@@ -130,6 +124,7 @@ const Home: NextPage<{ repos: Repo[] }> = (props) => {
             direction={direction}
           />
           {content}
+          {isLoading && <LoadingAnimation />}
         </div>
       </div>
     </>

@@ -6,11 +6,13 @@ import Repo from "../models/repo";
 type repoStateObj = {
   repos: Repo[];
   currentPage: number;
+  isEnd: boolean;
 };
 
 const initialReposState: repoStateObj = {
   repos: [],
   currentPage: 0,
+  isEnd: false,
 };
 
 const ReposSlice = createSlice({
@@ -19,6 +21,9 @@ const ReposSlice = createSlice({
   reducers: {
     // concatenate new repos behind current repos.
     addRepos(state, action) {
+      if (action.payload.length < 3) {
+        state.isEnd = true;
+      }
       state.repos = [...state.repos, ...action.payload];
       state.currentPage++;
     },
@@ -27,6 +32,7 @@ const ReposSlice = createSlice({
     setRepos(state, action) {
       state.repos = action.payload;
       state.currentPage = 1;
+      state.isEnd = false;
     },
   },
 });

@@ -44,7 +44,6 @@ module.exports = {
 
 // Exports
 module.exports = {
-	"backdrop": "LoadingAnimation_backdrop__OcCYF",
 	"loading": "LoadingAnimation_loading__FUYKt",
 	"scaleUp": "LoadingAnimation_scaleUp__HDp9E"
 };
@@ -329,7 +328,7 @@ const useFetchRepos = (repoName)=>{
     // HTTP request status
     const { 0: isLoading , 1: setIsLoading  } = (0,external_react_.useState)(false);
     const { 0: error , 1: setError  } = (0,external_react_.useState)(null);
-    const sendRequest = async (newPage, type, sort, direction)=>{
+    const sendRequest = (0,external_react_.useCallback)(async (newPage, type, sort, direction)=>{
         setIsLoading(true);
         setError(null);
         // newPage => the page number to extract.
@@ -348,7 +347,7 @@ const useFetchRepos = (repoName)=>{
             setError("Something went wrong.");
             setIsLoading(false);
         }
-    };
+    }, []);
     return {
         isLoading,
         error,
@@ -381,11 +380,9 @@ const REPO_NAME = "ChiuYuan-First-Organization";
 let isInitial = true;
 const Home = (props)=>{
     const dispatch = (0,external_react_redux_.useDispatch)();
-    const { currentPage , repos  } = (0,external_react_redux_.useSelector)((state)=>state.repos
+    const { currentPage , repos , isEnd  } = (0,external_react_redux_.useSelector)((state)=>state.repos
     );
     const { isLoading , error , sendRequest  } = fetchRepos(REPO_NAME);
-    // to check if the page has been scrolled to end.
-    const { 0: isEnd , 1: setIsEnd  } = (0,external_react_.useState)(false);
     // ref for scroll event.
     const containerRef = (0,external_react_.useRef)(null);
     const innerRef = (0,external_react_.useRef)(null);
@@ -412,12 +409,12 @@ const Home = (props)=>{
             }
             // set the entire repos to newly received repos.
             dispatch(store_repos/* reposActions.setRepos */.c.setRepos(newRepos));
-            setIsEnd(false);
         });
     }, [
         type,
         sort,
-        direction
+        direction,
+        sendRequest
     ]);
     // function triggered by scroll event listener.
     const scrollHandler = ()=>{
@@ -434,10 +431,9 @@ const Home = (props)=>{
                     const newRepos = JSON.parse(JSON.stringify(data));
                     dispatch(store_repos/* reposActions.addRepos */.c.addRepos(newRepos));
                 } else {
-                    // this block triggered when length of data is not greater than 0.
-                    // equal to 'no more valid data'.
-                    // set isEnd to true to stop triggering this function when scroll.
-                    setIsEnd(true);
+                // this block triggered when length of data is not greater than 0.
+                // equal to 'no more valid data'.
+                // set isEnd to true to stop triggering this function when scroll.
                 }
             });
         }
@@ -473,7 +469,6 @@ const Home = (props)=>{
                     })
                 ]
             }),
-            isLoading && /*#__PURE__*/ jsx_runtime_.jsx(LoadingAnimation, {}),
             /*#__PURE__*/ jsx_runtime_.jsx("div", {
                 ref: containerRef,
                 onScroll: scrollHandler,
@@ -490,7 +485,8 @@ const Home = (props)=>{
                             sort: sort,
                             direction: direction
                         }),
-                        content
+                        content,
+                        isLoading && /*#__PURE__*/ jsx_runtime_.jsx(LoadingAnimation, {})
                     ]
                 })
             })
@@ -513,47 +509,6 @@ const getStaticProps = async ()=>{
     };
 };
 /* harmony default export */ const pages = (Home);
-
-
-/***/ }),
-
-/***/ 547:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "c": () => (/* binding */ reposActions),
-/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _reduxjs_toolkit__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(184);
-/* harmony import */ var _reduxjs_toolkit__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_reduxjs_toolkit__WEBPACK_IMPORTED_MODULE_0__);
-
-const initialReposState = {
-    repos: [],
-    currentPage: 0
-};
-const ReposSlice = (0,_reduxjs_toolkit__WEBPACK_IMPORTED_MODULE_0__.createSlice)({
-    name: "repositories",
-    initialState: initialReposState,
-    reducers: {
-        // concatenate new repos behind current repos.
-        addRepos (state, action) {
-            state.repos = [
-                ...state.repos,
-                ...action.payload
-            ];
-            state.currentPage++;
-        },
-        // set the entire repos to new repos when query params was changed.
-        // reset page number.
-        setRepos (state, action) {
-            state.repos = action.payload;
-            state.currentPage = 1;
-        }
-    }
-});
-const reposActions = ReposSlice.actions;
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ReposSlice.reducer);
 
 
 /***/ }),
@@ -597,7 +552,7 @@ module.exports = require("react/jsx-runtime");
 var __webpack_require__ = require("../webpack-runtime.js");
 __webpack_require__.C(exports);
 var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-var __webpack_exports__ = (__webpack_exec__(437));
+var __webpack_exports__ = __webpack_require__.X(0, [547], () => (__webpack_exec__(437)));
 module.exports = __webpack_exports__;
 
 })();
